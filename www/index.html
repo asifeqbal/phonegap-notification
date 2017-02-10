@@ -53,9 +53,12 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
-        app.initialize();
-		document.getElementById('blanker').style.display = 'block';
-				//alert('hi');
+	document.addEventListener("deviceready",onDeviceReady,false);
+			function onDeviceReady()                    
+			{ 
+        
+		
+				alert('hi');
 				var push = PushNotification.init({ "android": {"senderID": "509786912381"},
 				"ios": {"alert": "true", "badge": "true", "sound": "true"}, "windows": {} } );
 				
@@ -72,6 +75,7 @@
 				push.on('notification', function(data) {
 					console.log(data.message);				
 				});
+				}
     </script>
 </body>
 
