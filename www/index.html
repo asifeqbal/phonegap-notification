@@ -39,24 +39,65 @@
     <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
 
     <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <title>Hello World</title>
+	<style>
+		html, body{width:100%; height:100%;}
+		body{margin:0; padding:0;}
+		#blanker{background-image:url('loader.gif'); background-repeat:no-repeat; background-position: center center; display:block; z-index:9998; position:fixed; top:0;left:0; height:100%; width:100%; background-color:#12ccb4;}
+		#offline-screen{width:100%; height:130%; background:url('connectionlost.png') no-repeat center center; background-color: #12CCB4; background-size:contain; display:none; z-index:9999; position:fixed; top:0; left:0;}
+	</style>
 </head>
 
 <body>
-    <div class="app">
-        <h1>PhoneGap</h1>
-        <div id="registration" class="blink">
-            <p class="event waiting">Requesting Registration ID</p>
-            <p class="event received">Registered</p>
-        </div>
-    </div>
+	<div id="blanker"></div>
+	<div id="offline-screen"></div>
+	<div class="social-button-facebook button_inline" onclick="browse();"></div>
+	
+	<iframe src="http://app.roootsj.com"  name="container-frame" id="container-frame" onload="loaded();" seamless="seamless" width="100%" height="100%" style="border:none; position:absolute;"></iframe>
+       
+	   
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
+	document.getElementById('offline-screen').style.height = document.body.clientHeight+'px';
 	document.addEventListener("deviceready",onDeviceReady,false);
+	
+			function loaded(){
+						document.getElementById('blanker').style.display = 'none';
+					}
+					var receiveMessage = function receiveMessage(e){
+						switch (e.data) {
+								case 'setBlanker':
+								document.getElementById('blanker').style.display = 'block';
+								break;
+								case 'removeBlanker':
+								document.getElementById('blanker').style.display = 'none'; 
+								break;
+							}
+					};			
+			window.addEventListener("message", receiveMessage, false);
+			
+			function getPosition() {
+
+			   var options = {
+				  enableHighAccuracy: true,
+				  maximumAge: 3600000
+			   }
+				
+			   var watchID = navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+
+			   function onSuccess(position) {
+					
+				 document.getElementById('container-frame').src ='http://app.roootsj.com/index.php?lat='+ position.coords.latitude + '&lon=' + position.coords.longitude;
+			   };
+
+			   function onError(error) {
+				  alert('code: '    + error.code    + '\n' + 'message: ' + error.message + '\n');
+			   }
+			}
+			
 			function onDeviceReady()                    
 			{ 
-        
+				getPosition();
 		
 				alert('hi');
 				var push = PushNotification.init({ "android": {"senderID": "509786912381"},
@@ -65,7 +106,7 @@
 				push.on('registration', function(data) {
 					alert(data.registrationId);
 					if(flag){
-					document.getElementById('container-frame').src = 'http://app.pradict.com/index.php?id=1&devType=2&devId='+data.registrationId;
+					document.getElementById('container-frame').src = 'http://app.roootsj.com/index.php?id=1&dType=2&did='+data.registrationId;
 					document.getElementById('blanker').style.display = 'none';
 					}
 					flag=false;
@@ -75,7 +116,26 @@
 				push.on('notification', function(data) {
 					console.log(data.message);				
 				});
+				
+			// Blanker on change
+			document.addEventListener("online", doWhenOnline, false);
+				document.addEventListener("offline", doWhenOffline, false);
+				var networkState = navigator.connection.type;
+				
+				if(networkState == Connection.NONE) {
+					doWhenOffline();
 				}
+				else{
+					doWhenOnline();
+				} 	
+			}
+			
+			function doWhenOnline(){
+				document.getElementById('offline-screen').style.display = 'none';
+			}
+			function doWhenOffline(){				
+				document.getElementById('offline-screen').style.display = 'block';
+			}
     </script>
 </body>
 
