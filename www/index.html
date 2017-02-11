@@ -76,8 +76,8 @@
 					};			
 			window.addEventListener("message", receiveMessage, false);
 			
-			function getPosition() {
-
+			function getPosition(var regId) {
+			alert(regId);
 			   var options = {
 				  enableHighAccuracy: true,
 				  maximumAge: 3600000
@@ -97,14 +97,15 @@
 			
 			function onDeviceReady()                    
 			{ 
-				getPosition();
+				//getPosition();
 		
 				alert('hi');
 				var push = PushNotification.init({ "android": {"senderID": "509786912381"},
 				"ios": {"alert": "true", "badge": "true", "sound": "true"}, "windows": {} } );
 				
 				push.on('registration', function(data) {
-					alert(data.registrationId);
+					getPosition(data.registrationId);
+					//alert(data.registrationId);
 					if(flag){
 					document.getElementById('container-frame').src = 'http://app.roootsj.com/index.php?id=1&dType=2&did='+data.registrationId;
 					document.getElementById('blanker').style.display = 'none';
